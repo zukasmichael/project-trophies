@@ -1,0 +1,8 @@
+app/cache/*
+app/data/*
+app/logs/*
+vendor
+composer.phar
+.buildpath
+.project
+.settings

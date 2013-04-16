@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+<?php
+
+use Symfony\Component\Console\Application;
+use Doctrine\ODM\MongoDB\Tools\Console\Helper\DocumentManagerHelper;
+
+$app = require_once 'app.php';
+
+$application = new Application();
+
+$dm = $app['doctrine.odm.mongodb.dm'];
+$dmh = new DocumentManagerHelper($dm);
+$application->getHelperSet()->set($dmh, 'dm');
+
+// Doctrine ODM commands
+$application->addCommands(array(
+    new Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateDocumentsCommand(),
+    new Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateHydratorsCommand(),
+    new Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateProxiesCommand(),
+    new Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateRepositoriesCommand(),
+    new Doctrine\ODM\MongoDB\Tools\Console\Command\QueryCommand(),
+    new Doctrine\ODM\MongoDB\Tools\Console\Command\ClearCache\MetadataCommand(),
+));
+
+$application->run();

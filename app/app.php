@@ -1,6 +1,7 @@
 <?php
 
 use Silex\Provider\MonologServiceProvider;
+use Silex\Provider\SessionServiceProvider;
 use Silex\Provider\TranslationServiceProvider;
 use Silex\Provider\ValidatorServiceProvider;
 use Silex\Provider\FormServiceProvider;
@@ -27,6 +28,7 @@ $app['locale'] = 'fr';
 $app->register(new MonologServiceProvider(), array(
     'monolog.logfile' => APP_PATH . '/logs/development.log'
 ));
+$app->register(new SessionServiceProvider());
 $app->register(new TranslationServiceProvider());
 $app->register(new ValidatorServiceProvider());
 $app->register(new FormServiceProvider());

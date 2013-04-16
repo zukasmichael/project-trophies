@@ -1,5 +1,10 @@
 {% from 'Macro/flash.twig' import session_flash %}
-{% set navigation = {  } %}
+
+{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+    {% set navigation = { 'logout': 'Se déconnecter' } %}
+{% else %}
+    {% set navigation = { 'login': 'Se connecter' } %}
+{% endif %}
 <!DOCTYPE html>
 <html>
     <head>

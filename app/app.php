@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use Svnfqt\ProjectTrophies\Security\User\UserProvider;
+use Svnfqt\ProjectTrophies\Form\RegisterType;
 use Svnfqt\ProjectTrophies\Form\LoginType;
 
 $autoloader = require_once __DIR__.'/../vendor/autoload.php';
@@ -35,6 +36,10 @@ $app->register(new MonologServiceProvider(), array(
 $app->register(new SessionServiceProvider());
 $app->register(new SecurityServiceProvider(), array(
     'security.firewalls' => array(
+        'register' => array(
+            'pattern' => '^/register$',
+            'anonymous' => true
+        ),
         'login' => array(
             'pattern' => '^/login$',
             'anonymous' => true
@@ -47,7 +52,7 @@ $app->register(new SecurityServiceProvider(), array(
             ),
             'logout' => array('logout_path' => '/logout'),
             'users' => $app->share(function () use ($app) {
-                return new UserProvider($app['doctrine.odm.mongodb.dm']);
+                return $app['project-trophies.security.user_provider'];
             })
         )
     )
@@ -100,15 +105,52 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 }));
 
 // Services
+$app['project-trophies.forms.register'] = function () {
+    return new RegisterType();
+};
 $app['project-trophies.forms.login'] = function () {
     return new LoginType();
 };
+$app['project-trophies.security.user_provider'] = $app->share(function ($app) {
+    return new UserProvider($app['doctrine.odm.mongodb.dm']);
+});
 
 // Homepage
 $app->get('/', function () use ($app) {
     return $app['twig']->render('homepage.twig');
 })
 ->bind('homepage');
+
+// Register
+$app->match('/register', function(Request $request) use ($app) {
+    $form = $app['form.factory']->create($app['project-trophies.forms.register']);
+
+    if ('POST' == $request->getMethod()) {
+        $form->bind($request);
+
+        if ($form->isValid()) {
+            $user = $form->getData();
+
+            // Encode plain password
+            $encoder = $app['security.encoder_factory']->getEncoder($user);
+            $password = $encoder->encodePassword($user->getPassword(), $user->getSalt());
+            $user->setPassword($password);
+
+            if (false !== ($app['project-trophies.security.user_provider']->persistUser($user))) {
+                return $app->redirect($app['url_generator']->generate('login'));
+            }
+
+            $app['session']->getFlashBag()->add('error', 'L\'enregistrement a échoué. Veuillez réessayer.');
+        } else {
+            $app['session']->getFlashBag()->add('notice', 'Le formulaire n\'est pas valide.');
+        }
+    }
+
+    return $app['twig']->render('register.twig', array(
+        'form' => $form->createView()
+    ));
+})
+->bind('register');
 
 // Login
 $app->get('/login', function(Request $request) use ($app) {

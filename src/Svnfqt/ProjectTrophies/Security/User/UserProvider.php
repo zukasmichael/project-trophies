@@ -4,12 +4,11 @@ namespace Svnfqt\ProjectTrophies\Security\User;
 
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use Doctrine\DBAL\Connection;
-
 use Doctrine\ODM\MongoDB\DocumentManager;
+
+use Svnfqt\ProjectTrophies\Document\User;
 
 class UserProvider implements UserProviderInterface
 {
@@ -36,26 +35,77 @@ class UserProvider implements UserProviderInterface
         return $this->documentManager->getRepository('Svnfqt\ProjectTrophies\Document\User');
     }
 
+    public function createUser()
+    {
+        return new User();
+    }
+
+    public function loadUsers()
+    {
+        return $this->getRepository()->findAllOrderedByUsername();
+    }
+
     public function loadUserByUsername($username)
     {
         if (!$user = $this->getRepository()->findOneByUsername($username)) {
             throw new UsernameNotFoundException(sprintf('Username "%s" does not exist.', $username));
         }
 
-        return new User($user->getUsername(), $user->getPassword(), $user->getRoles(), true, true, true, true);
+        return $user;
     }
 
     public function refreshUser(UserInterface $user)
     {
-        if (!$user instanceof User) {
-            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', get_class($user)));
+        // TODO DRY
+        $class = get_class($user);
+
+        if (!$this->supportsClass($class)) {
+            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $class));
         }
 
         return $this->loadUserByUsername($user->getUsername());
     }
 
+    public function persistUser(UserInterface $user)
+    {
+        // TODO DRY
+        $class = get_class($user);
+
+        if (!$this->supportsClass($class)) {
+            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $class));
+        }
+
+        try {
+            $this->documentManager->persist($user);
+            $this->documentManager->flush();
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function removeUser(UserInterface $user)
+    {
+        // TODO DRY
+        $class = get_class($user);
+
+        if (!$this->supportsClass($class)) {
+            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $class));
+        }
+
+        try {
+            $this->documentManager->remove($user);
+            $this->documentManager->flush();
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
+    }
+
     public function supportsClass($class)
     {
-        return $class === 'Symfony\Component\Security\Core\User\User';
+        return $class === 'Svnfqt\ProjectTrophies\Document\User';
     }
 }

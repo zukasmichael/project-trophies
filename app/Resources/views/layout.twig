@@ -3,7 +3,7 @@
 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
     {% set navigation = { 'logout': 'Se déconnecter' } %}
 {% else %}
-    {% set navigation = { 'login': 'Se connecter' } %}
+    {% set navigation = { 'register': 'S\'enregistrer', 'login': 'Se connecter' } %}
 {% endif %}
 
 <!DOCTYPE html>

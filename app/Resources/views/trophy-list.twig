@@ -16,6 +16,7 @@
                 <th>Nom</th>
                 <th>Image</th>
                 <th>Actions</th>
+                <th>Possesseurs</th>
             </tr>
         </thead>
         <tbody>
@@ -33,6 +34,11 @@
                     {% else %}
                     <a href="{{ path('user-trophy-collection-remove', { 'name': trophy.name }) }}">Supprimer de votre collection</a>
                     {% endif %}
+                </td>
+                <td>
+                    {% for user in trophy.users %}
+                    {{ authenticated_user == user ? 'moi' : user.username }}{{ loop.last ? '' : ', ' }}
+                    {% endfor %}
                 </td>
             </tr>
             {% endfor %}

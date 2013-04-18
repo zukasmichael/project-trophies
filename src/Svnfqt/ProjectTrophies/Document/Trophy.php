@@ -24,6 +24,11 @@ class Trophy
      */
     private $image;
 
+    /**
+     * @ODM\ReferenceMany(targetDocument="User", mappedBy="trophies")
+     */
+    private $users;
+
     public function getId()
     {
         return $this->id;
@@ -47,5 +52,10 @@ class Trophy
     public function setImage(Image $image)
     {
         $this->image = $image;
+    }
+
+    public function getUsers()
+    {
+        return $this->users;
     }
 }

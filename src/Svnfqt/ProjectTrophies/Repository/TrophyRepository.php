@@ -9,6 +9,7 @@ class TrophyRepository extends DocumentRepository
     public function findAllOrderedByName()
     {
         return $this->createQueryBuilder()
+            ->field('users')->prime(true)
             ->sort('name', 'ASC')
             ->getQuery()
             ->execute();

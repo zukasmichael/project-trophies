@@ -15,6 +15,7 @@
             <tr>
                 <th>Nom</th>
                 <th>Image</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -25,6 +26,13 @@
                 </td>
                 <td>
                     <img src="data:image/png;base64,{{ base64_encode(trophy.image.file.bytes) }}" alt="{{ trophy.name }}" />
+                </td>
+                <td>
+                    {% if authenticated_user not in trophy.users %}
+                    <a href="{{ path('user-trophy-collection-add', { 'name': trophy.name }) }}">Ajouter à votre collection</a>
+                    {% else %}
+                    <a href="{{ path('user-trophy-collection-remove', { 'name': trophy.name }) }}">Supprimer de votre collection</a>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}

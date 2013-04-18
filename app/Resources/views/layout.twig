@@ -1,6 +1,7 @@
 {% from 'Macro/flash.twig' import session_flash %}
 
 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+    {% set authenticated_user = app.security.token.user %}
     {% set navigation = { 'trophy-list': 'Liste des trophées', 'trophy-edit': 'Nouveau trophée', 'logout': 'Se déconnecter' } %}
 {% else %}
     {% set navigation = { 'register': 'S\'enregistrer', 'login': 'Se connecter' } %}

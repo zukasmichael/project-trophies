@@ -220,4 +220,70 @@ $app->match('/trophy/edit', function(Request $request) use ($app) {
 })
 ->bind('trophy-edit');
 
+$app->match('/user/trophy-collection/add/{name}', function ($name) use ($app) {
+    // TODO Refactoring : use a service
+    $trophyRepository = $app['doctrine.odm.mongodb.dm']->getRepository('Svnfqt\ProjectTrophies\Document\Trophy');
+
+    if (null === ($trophy = $trophyRepository->findOneByName($name))) {
+        $app->abort(404);
+    }
+
+    $user = $app['security']->getToken()->getUser();
+    $userTrophies = $user->getTrophies();
+
+    if ($userTrophies->contains($trophy)) {
+        $app['session']->getFlashBag()->add('notice', 'Vous possédez déjà ce trophée.');
+    } else {
+        $userTrophies->add($trophy);
+
+        // TODO Refactoring : use a service
+        try {
+            $app['doctrine.odm.mongodb.dm']->persist($user);
+            $app['doctrine.odm.mongodb.dm']->flush();
+            $app['session']->getFlashBag()->add('success', 'Le trophée a été ajouté à votre collection.');
+        } catch (\Exception $e) {
+            $app['session']->getFlashBag()->add(
+                'error',
+                'L\'ajout du trophée à votre collection a échoué. Veuillez réessayer.'
+            );
+        }
+    }
+
+    return $app->redirect($app['url_generator']->generate('trophy-list'));
+})
+->bind('user-trophy-collection-add');
+
+$app->match('/user/trophy-collection/remove/{name}', function ($name) use ($app) {
+    // TODO Refactoring : use a service
+    $trophyRepository = $app['doctrine.odm.mongodb.dm']->getRepository('Svnfqt\ProjectTrophies\Document\Trophy');
+
+    if (null === ($trophy = $trophyRepository->findOneByName($name))) {
+        $app->abort(404);
+    }
+
+    $user = $app['security']->getToken()->getUser();
+    $userTrophies = $user->getTrophies();
+
+    if (!$userTrophies->contains($trophy)) {
+        $app['session']->getFlashBag()->add('notice', 'Vous ne possédez pas ce trophée.');
+    } else {
+        $userTrophies->removeElement($trophy);
+
+        // TODO Refactoring : use a service
+        try {
+            $app['doctrine.odm.mongodb.dm']->persist($user);
+            $app['doctrine.odm.mongodb.dm']->flush();
+            $app['session']->getFlashBag()->add('success', 'Le trophée a été supprimé de votre collection.');
+        } catch (\Exception $e) {
+            $app['session']->getFlashBag()->add(
+                'error',
+                'La suppression du trophée de votre collection a échoué. Veuillez réessayer.'
+            );
+        }
+    }
+
+    return $app->redirect($app['url_generator']->generate('trophy-list'));
+})
+->bind('user-trophy-collection-remove');
+
 return $app;

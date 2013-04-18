@@ -8,7 +8,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * @ODM\Document(repositoryClass="Svnfqt\ProjectTrophies\Repository\UserRepository")
  */
-class User implements UserInterface
+class User implements UserInterface, \Serializable
 {
     /**
      * @ODM\Id
@@ -34,6 +34,11 @@ class User implements UserInterface
      * @ODM\Hash
      */
     private $roles = array();
+
+    /**
+     * @ODM\ReferenceMany(targetDocument="Trophy", inversedBy="users", cascade={"persist"})
+     */
+    private $trophies;
 
     public function __construct()
     {
@@ -85,7 +90,26 @@ class User implements UserInterface
         return $this->roles;
     }
 
+    public function getTrophies()
+    {
+        return $this->trophies;
+    }
+
     public function eraseCredentials()
     {
+    }
+
+    public function serialize()
+    {
+        return serialize(array(
+            $this->username
+        ));
+    }
+
+    public function unserialize($serialized)
+    {
+        list (
+            $this->username
+        ) = unserialize($serialized);
     }
 }

@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Svnfqt\ProjectTrophies\Security\User\UserProvider;
 use Svnfqt\ProjectTrophies\Form\RegisterType;
 use Svnfqt\ProjectTrophies\Form\LoginType;
+use Svnfqt\ProjectTrophies\Form\TrophyType;
 
 $autoloader = require_once __DIR__.'/../vendor/autoload.php';
 
@@ -98,6 +99,9 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     // Extensions
     $twig->addExtension(new Twig_Extensions_Extension_Intl());
 
+    // Functions
+    $twig->addFunction(new Twig_SimpleFunction('base64_encode', 'base64_encode'));
+
     // Global vars
     $twig->addGlobal('layout', $twig->loadTemplate('layout.twig'));
 
@@ -110,6 +114,9 @@ $app['project-trophies.forms.register'] = function () {
 };
 $app['project-trophies.forms.login'] = function () {
     return new LoginType();
+};
+$app['project-trophies.forms.trophy'] = function () {
+    return new TrophyType();
 };
 $app['project-trophies.security.user_provider'] = $app->share(function ($app) {
     return new UserProvider($app['doctrine.odm.mongodb.dm']);
@@ -170,5 +177,47 @@ $app->get('/login', function(Request $request) use ($app) {
     ));
 })
 ->bind('login');
+
+// Trophy list
+$app->get('/trophy/list', function() use ($app) {
+    // TODO Refactoring : use a service
+    $trophyRepository = $app['doctrine.odm.mongodb.dm']->getRepository('Svnfqt\ProjectTrophies\Document\Trophy');
+    $trophies = $trophyRepository->findAllOrderedByName();
+
+    return $app['twig']->render('trophy-list.twig', array(
+        'trophies' => $trophies
+    ));
+})
+->bind('trophy-list');
+
+// Trophy edition
+$app->match('/trophy/edit', function(Request $request) use ($app) {
+    $form = $app['form.factory']->create($app['project-trophies.forms.trophy']);
+
+    if ('POST' == $request->getMethod()) {
+        $form->bind($request);
+
+        if ($form->isValid()) {
+            $trophy = $form->getData();
+
+            // TODO Refactoring : use a service
+            try {
+                $app['doctrine.odm.mongodb.dm']->persist($trophy);
+                $app['doctrine.odm.mongodb.dm']->flush();
+                return $app->redirect($app['url_generator']->generate('trophy-list'));
+            } catch (\Exception $e) {}
+
+
+            $app['session']->getFlashBag()->add('error', 'L\'enregistrement a échoué. Veuillez réessayer.');
+        } else {
+            $app['session']->getFlashBag()->add('notice', 'Le formulaire n\'est pas valide.');
+        }
+    }
+
+    return $app['twig']->render('trophy-edit.twig', array(
+        'form' => $form->createView()
+    ));
+})
+->bind('trophy-edit');
 
 return $app;

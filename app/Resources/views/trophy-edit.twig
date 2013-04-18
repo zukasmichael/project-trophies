@@ -1,0 +1,15 @@
+{% extends layout %}
+
+{% form_theme form 'Form/form.twig' %}
+
+{% block content_title %}Nouveau trophée{% endblock %}
+
+{% block content %}
+
+    <form action="{{ path('trophy-edit') }}" method="post" {{ form_enctype(form) }} class="well">
+        {{ form_widget(form) }}
+
+        <button type="submit" class="btn btn-info">Enregistrer</button>
+    </form>
+
+{% endblock %}

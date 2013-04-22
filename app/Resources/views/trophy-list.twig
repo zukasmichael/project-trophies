@@ -34,9 +34,9 @@
                 </td>
                 <td>
                     {% if authenticated_user not in trophy.users %}
-                    <a href="{{ path('user-trophy-collection-add', { 'name': trophy.name }) }}">Ajouter à votre collection</a>
+                    <a href="{{ path('user-trophy-collection-add', { 'slug': trophy.slug }) }}">Ajouter à votre collection</a>
                     {% else %}
-                    <a href="{{ path('user-trophy-collection-remove', { 'name': trophy.name }) }}">Supprimer de votre collection</a>
+                    <a href="{{ path('user-trophy-collection-remove', { 'slug': trophy.slug }) }}">Supprimer de votre collection</a>
                     {% endif %}
                 </td>
                 <td>

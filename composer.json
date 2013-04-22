@@ -37,6 +37,7 @@
         "swiftmailer/swiftmailer": "4.1.*",
         "twig/extensions": "v1.0.0-alpha",
         "doctrine/mongodb-odm": "1.0.0-BETA8",
-        "neutron/mongo-odm-silex-provider": "0.1.0"
+        "neutron/mongo-odm-silex-provider": "0.1.0",
+        "gedmo/doctrine-extensions": "~2.3"
     }
 }

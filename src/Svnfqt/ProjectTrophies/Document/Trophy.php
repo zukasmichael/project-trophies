@@ -3,6 +3,7 @@
 namespace Svnfqt\ProjectTrophies\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ODM\Document(repositoryClass="Svnfqt\ProjectTrophies\Repository\TrophyRepository")
@@ -13,6 +14,12 @@ class Trophy
      * @ODM\Id
      */
     private $id;
+
+    /**
+     * @ODM\String @ODM\Index(unique=true, order="asc")
+     * @Gedmo\Slug(fields={"name"})
+     */
+    private $slug;
 
     /**
      * @ODM\String @ODM\Index(unique=true, order="asc")
@@ -37,6 +44,16 @@ class Trophy
     public function getId()
     {
         return $this->id;
+    }
+
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+    }
+
+    public function getSlug()
+    {
+        return $this->slug;
     }
 
     public function setName($name)

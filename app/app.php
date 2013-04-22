@@ -91,6 +91,10 @@ $app->register(new MongoDBODMServiceProvider(), array(
 // Configure doctrine
 AnnotationRegistry::registerLoader(array($autoloader, 'loadClass'));
 
+// Configure doctrine listeners
+$sluggableListener = new \Gedmo\Sluggable\SluggableListener();
+$app['doctrine.odm.mongodb.dm']->getEventManager()->addEventSubscriber($sluggableListener);
+
 // Configure odm
 $app['doctrine.odm.mongodb.dm']->getSchemaManager()->ensureIndexes();
 
@@ -220,11 +224,11 @@ $app->match('/trophy/edit', function(Request $request) use ($app) {
 })
 ->bind('trophy-edit');
 
-$app->match('/user/trophy-collection/add/{name}', function ($name) use ($app) {
+$app->match('/user/trophy-collection/add/{slug}', function ($slug) use ($app) {
     // TODO Refactoring : use a service
     $trophyRepository = $app['doctrine.odm.mongodb.dm']->getRepository('Svnfqt\ProjectTrophies\Document\Trophy');
 
-    if (null === ($trophy = $trophyRepository->findOneByName($name))) {
+    if (null === ($trophy = $trophyRepository->findOneBySlug($slug))) {
         $app->abort(404);
     }
 
@@ -253,11 +257,11 @@ $app->match('/user/trophy-collection/add/{name}', function ($name) use ($app) {
 })
 ->bind('user-trophy-collection-add');
 
-$app->match('/user/trophy-collection/remove/{name}', function ($name) use ($app) {
+$app->match('/user/trophy-collection/remove/{slug}', function ($slug) use ($app) {
     // TODO Refactoring : use a service
     $trophyRepository = $app['doctrine.odm.mongodb.dm']->getRepository('Svnfqt\ProjectTrophies\Document\Trophy');
 
-    if (null === ($trophy = $trophyRepository->findOneByName($name))) {
+    if (null === ($trophy = $trophyRepository->findOneBySlug($slug))) {
         $app->abort(404);
     }
 

@@ -23,6 +23,17 @@ class TrophyType extends AbstractType
                     )
                 )
             )
+            ->add(
+                'description',
+                'textarea',
+                array(
+                    'label' => 'Description',
+                    'constraints' => array(
+                        new Assert\NotBlank(),
+                        new Assert\Length(array('max' => 255)),
+                    )
+                )
+            )
             ->add('image', new ImageType())
             ->getForm();
     }

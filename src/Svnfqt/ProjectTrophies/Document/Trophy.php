@@ -20,6 +20,11 @@ class Trophy
     private $name;
 
     /**
+     * @ODM\String
+     */
+    private $description;
+
+    /**
      * @ODM\ReferenceOne(targetDocument="Image", cascade={"persist"})
      */
     private $image;
@@ -42,6 +47,16 @@ class Trophy
     public function getName()
     {
         return $this->name;
+    }
+
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
     }
 
     public function getImage()

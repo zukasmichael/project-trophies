@@ -30,6 +30,17 @@ class RegisterType extends AbstractType
                 )
             )
             ->add(
+                'email',
+                'email',
+                array(
+                    'label' => 'Email',
+                    'constraints' => array(
+                        new Assert\NotBlank(),
+                        new Assert\Email(array('checkMX' => true))
+                    )
+                )
+            )
+            ->add(
                 'password',
                 'repeated',
                 array(

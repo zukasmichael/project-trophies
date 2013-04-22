@@ -36,6 +36,11 @@ class User implements UserInterface, \Serializable
     private $roles = array();
 
     /**
+     * @ODM\String @ODM\Index(unique=true, order="asc")
+     */
+    private $email;
+
+    /**
      * @ODM\ReferenceMany(targetDocument="Trophy", inversedBy="users", cascade={"persist"})
      */
     private $trophies;
@@ -88,6 +93,16 @@ class User implements UserInterface, \Serializable
     public function getRoles()
     {
         return $this->roles;
+    }
+
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
     }
 
     public function getTrophies()

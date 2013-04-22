@@ -18,7 +18,14 @@ class RegisterType extends AbstractType
                 array(
                     'label' => 'Nom d\'utilisateur',
                     'constraints' => array(
-                        new Assert\NotBlank()
+                        new Assert\NotBlank(),
+                        new Assert\Length(array('min' => 3)),
+                        new Assert\Regex(
+                            array(
+                                'pattern' => '/^[a-zA-Z0-9]+$/',
+                                'message' => 'Seuls les caractères alphanumériques sont autorisés'
+                            )
+                        )
                     )
                 )
             )
@@ -30,7 +37,8 @@ class RegisterType extends AbstractType
                     'invalid_message' => 'Les champs mot de passe doivent être identiques.',
                     'options' => array('label' => 'Mot de passe'),
                     'constraints' => array(
-                        new Assert\NotBlank()
+                        new Assert\NotBlank(),
+                        new Assert\Length(array('min' => 6))
                     )
                 )
             )

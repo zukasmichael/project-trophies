@@ -16,7 +16,18 @@ class ImageType extends AbstractType
                 'file',
                 'file',
                 array(
-                    'label' => 'Fichier'
+                    'label' => 'Fichier',
+                    'constraints' => array(
+                        new Assert\Image(array(
+                            'maxSize' => '2048k',
+                            'mimeTypes' => array('image/png'),
+                            'mimeTypesMessage' => 'L\'image doit être au format png',
+                            'minWidth' => 400,
+                            'maxWidth' => 400,
+                            'minHeight' => 400,
+                            'maxHeight' => 400
+                        ))
+                    )
                 )
             )
             ->getForm();

@@ -18,7 +18,8 @@ class TrophyType extends AbstractType
                 array(
                     'label' => 'Nom',
                     'constraints' => array(
-                        new Assert\NotBlank()
+                        new Assert\NotBlank(),
+                        new Assert\Length(array('max' => 100)),
                     )
                 )
             )

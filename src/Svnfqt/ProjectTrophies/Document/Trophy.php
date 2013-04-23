@@ -41,6 +41,18 @@ class Trophy
      */
     private $users;
 
+    /**
+     * @ODM\Timestamp
+     * @Gedmo\Timestampable(on="create")
+     */
+    private $creationTimestamp;
+
+    /**
+     * @ODM\Timestamp
+     * @Gedmo\Timestampable(on="update")
+     */
+    private $modificationTimestamp;
+
     public function getId()
     {
         return $this->id;
@@ -89,5 +101,25 @@ class Trophy
     public function getUsers()
     {
         return $this->users;
+    }
+
+    public function setCreationTimestamp($creationTimestamp)
+    {
+        $this->creationTimestamp = $creationTimestamp;
+    }
+
+    public function getCreationTimestamp()
+    {
+        return $this->creationTimestamp;
+    }
+
+    public function setModificationTimestamp($modificationTimestamp)
+    {
+        $this->modificationTimestamp = $modificationTimestamp;
+    }
+
+    public function getModificationTimestamp()
+    {
+        return $this->modificationTimestamp;
     }
 }

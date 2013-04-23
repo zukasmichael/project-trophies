@@ -3,6 +3,7 @@
 namespace Svnfqt\ProjectTrophies\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -44,6 +45,18 @@ class User implements UserInterface, \Serializable
      * @ODM\ReferenceMany(targetDocument="Trophy", inversedBy="users", cascade={"persist"})
      */
     private $trophies;
+
+    /**
+     * @ODM\Timestamp
+     * @Gedmo\Timestampable(on="create")
+     */
+    private $creationTimestamp;
+
+    /**
+     * @ODM\Timestamp
+     * @Gedmo\Timestampable(on="update")
+     */
+    private $modificationTimestamp;
 
     public function __construct()
     {
@@ -108,6 +121,26 @@ class User implements UserInterface, \Serializable
     public function getTrophies()
     {
         return $this->trophies;
+    }
+
+    public function setCreationTimestamp($creationTimestamp)
+    {
+        $this->creationTimestamp = $creationTimestamp;
+    }
+
+    public function getCreationTimestamp()
+    {
+        return $this->creationTimestamp;
+    }
+
+    public function setModificationTimestamp($modificationTimestamp)
+    {
+        $this->modificationTimestamp = $modificationTimestamp;
+    }
+
+    public function getModificationTimestamp()
+    {
+        return $this->modificationTimestamp;
     }
 
     public function eraseCredentials()

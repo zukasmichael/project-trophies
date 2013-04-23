@@ -92,8 +92,13 @@ $app->register(new MongoDBODMServiceProvider(), array(
 AnnotationRegistry::registerLoader(array($autoloader, 'loadClass'));
 
 // Configure doctrine listeners
-$sluggableListener = new \Gedmo\Sluggable\SluggableListener();
-$app['doctrine.odm.mongodb.dm']->getEventManager()->addEventSubscriber($sluggableListener);
+$subscribers = array(
+    new \Gedmo\Sluggable\SluggableListener(),
+    new \Gedmo\Timestampable\TimestampableListener()
+);
+foreach ($subscribers as $subscriber) {
+    $app['doctrine.odm.mongodb.dm']->getEventManager()->addEventSubscriber($subscriber);
+}
 
 // Configure odm
 $app['doctrine.odm.mongodb.dm']->getSchemaManager()->ensureIndexes();
